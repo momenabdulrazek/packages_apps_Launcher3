@@ -195,6 +195,7 @@ public final class Utilities {
     public static final String KEY_SHOW_QUICKSPACE_WEATHER = "pref_quickspace_weather";
     public static final String KEY_SHOW_QUICKSPACE_WEATHER_CITY = "pref_quickspace_weather_city";
     public static final String KEY_SHOW_QUICKSPACE_WEATHER_TEXT = "pref_quickspace_weather_text";
+    public static final String KEY_FORCE_MONOCHROME_ICON = "pref_force_monochrome_icon";
 
     /**
      * Returns true if theme is dark.
@@ -629,7 +630,9 @@ public final class Utilities {
 
         Drawable badge = null;
         if ((info instanceof ItemInfoWithIcon iiwi) && !iiwi.usingLowResIcon()) {
-            badge = iiwi.bitmap.getBadgeDrawable(context, useTheme);
+            try (LauncherIcons li = LauncherIcons.obtain(context)) {
+                badge = iiwi.bitmap.withUser(iiwi.user, li).getBadgeDrawable(context, useTheme);
+            }
         }
 
         if (info instanceof PendingAddShortcutInfo) {
@@ -712,11 +715,16 @@ public final class Utilities {
         }
 
         if (badge == null) {
-            badge = Process.myUserHandle().equals(info.user)
-                    ? new ColorDrawable(Color.TRANSPARENT)
-                    : context.getDrawable(useTheme
-                            ? R.drawable.ic_work_app_badge_themed
-                            : R.drawable.ic_work_app_badge);
+            try (LauncherIcons li = LauncherIcons.obtain(context)) {
+                badge = BitmapInfo.LOW_RES_INFO.withUser(info.user, li).withFlags(
+                                UserCache.INSTANCE.get(context)
+                                        .getUserInfo(info.user)
+                                        .applyBitmapInfoFlags(FlagOp.NO_OP))
+                        .getBadgeDrawable(context, useTheme);
+            }
+            if (badge == null) {
+                badge = new ColorDrawable(Color.TRANSPARENT);
+            }
         }
         return Pair.create(result, badge);
     }
@@ -1078,4 +1086,8 @@ public final class Utilities {
         SharedPreferences prefs = LauncherPrefs.getPrefs(context.getApplicationContext());
         return prefs.getBoolean(KEY_SHOW_QUICKSPACE_WEATHER_TEXT, true);
     }
+    public static boolean isForcedMonoIconEnabled(Context context) {
+        SharedPreferences prefs = LauncherPrefs.getPrefs(context.getApplicationContext());
+        return prefs.getBoolean(KEY_FORCE_MONOCHROME_ICON, false);
+   }
 }
