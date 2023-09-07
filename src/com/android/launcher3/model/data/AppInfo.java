@@ -187,12 +187,6 @@ public class AppInfo extends ItemInfoWithIcon implements WorkspaceItemFactory {
         info.runtimeStatusFlags |= (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0
                 ? FLAG_SYSTEM_NO : FLAG_SYSTEM_YES;
 
-        if (Flags.privateSpaceRestrictAccessibilityDrag()) {
-            if (userIconInfo.isPrivate()) {
-                info.runtimeStatusFlags |= FLAG_NOT_PINNABLE;
-            }
-        }
-
         // Sets the progress level, installation and incremental download flags.
         info.setProgressLevel(
                 PackageManagerHelper.getLoadingProgress(lai),
