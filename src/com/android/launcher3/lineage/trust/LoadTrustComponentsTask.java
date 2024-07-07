@@ -24,6 +24,7 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+import com.android.internal.util.sakura.Utils;
 import com.android.launcher3.lineage.trust.db.TrustComponent;
 import com.android.launcher3.lineage.trust.db.TrustDatabaseHelper;
 

@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.internal.util.sakura.Utils;
 import com.android.launcher3.R;
 import com.android.launcher3.lineage.trust.db.TrustComponent;
 
